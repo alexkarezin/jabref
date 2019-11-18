@@ -27,8 +27,8 @@ import static org.mockito.Mockito.when;
 
 class SaveDatabaseActionTest {
 
-    private static final String TEST_FILE_PATH = "C:\\Users\\John_Doe\\Jabref";
-    private final File file = new File(TEST_FILE_PATH);
+    private static final String TEST_BIBTEX_LIBRARY_LOCATION = "C:\\Users\\John_Doe\\Jabref\\literature.bib";
+    private final File file = new File(TEST_BIBTEX_LIBRARY_LOCATION);
     private Optional<Path> path = Optional.of(file.toPath());
 
     private DialogService dialogService = mock(DialogService.class);
@@ -49,7 +49,7 @@ class SaveDatabaseActionTest {
 
     @Test
     public void saveAsShouldSetWorkingDirectory() {
-        when(preferences.get(JabRefPreferences.WORKING_DIRECTORY)).thenReturn(TEST_FILE_PATH);
+        when(preferences.get(JabRefPreferences.WORKING_DIRECTORY)).thenReturn(TEST_BIBTEX_LIBRARY_LOCATION);
         when(dialogService.showFileSaveDialog(any(FileDialogConfiguration.class))).thenReturn(path);
         doNothing().when(saveDatabaseAction).saveAs(any());
 
@@ -60,7 +60,7 @@ class SaveDatabaseActionTest {
 
     @Test
     public void saveAsShouldNotSetWorkingDirectoryIfNotSelected() {
-        when(preferences.get(JabRefPreferences.WORKING_DIRECTORY)).thenReturn(TEST_FILE_PATH);
+        when(preferences.get(JabRefPreferences.WORKING_DIRECTORY)).thenReturn(TEST_BIBTEX_LIBRARY_LOCATION);
         when(dialogService.showFileSaveDialog(any(FileDialogConfiguration.class))).thenReturn(Optional.empty());
         doNothing().when(saveDatabaseAction).saveAs(any());
 
@@ -75,9 +75,9 @@ class SaveDatabaseActionTest {
         when(dbContext.getLocation()).thenReturn(DatabaseLocation.LOCAL);
         when(preferences.getBoolean(JabRefPreferences.LOCAL_AUTO_SAVE)).thenReturn(false);
 
-        saveDatabaseAction.saveAs(file.toPath());
+        saveDatabaseAction.saveAs(path.get());
 
-        verify(dbContext, times(1)).setDatabaseFile(file.toPath());
+        verify(dbContext, times(1)).setDatabaseFile(path.get());
     }
 
     @Test
@@ -90,7 +90,7 @@ class SaveDatabaseActionTest {
 
         saveDatabaseAction.save();
 
-        verify(saveDatabaseAction, times(1)).saveAs(file.toPath());
+        verify(saveDatabaseAction, times(1)).saveAs(path.get());
     }
 
     @Test
